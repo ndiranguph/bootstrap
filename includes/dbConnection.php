@@ -15,6 +15,7 @@ class dbConnection {
         $this->db_user = $db_user;
         $this->db_pass = $db_pass;
         $this->db_name = $db_name;
+        $this->db_name = 'bootstrap';
 
         $this->connection = $this->connect();
         if ($this->connection === null) {

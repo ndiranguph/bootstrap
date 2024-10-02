@@ -1,222 +1,218 @@
-
 <?php
-    class dbConnection{
-        private $connection;
+class dbConnection {
+    private $connection;
+    private $db_type;
+    private $db_host;
+    private $db_port;
+    private $db_user;
+    private $db_pass;
+    private $db_name;
 
-        private $db_type;
-        private $db_host;
-        private $db_port;
-        private $db_user;
-        private $db_pass;
-        private $db_name;
+    public function __construct($db_type, $db_host, $db_port, $db_user, $db_pass, $db_name) {
+        $this->db_type = $db_type;
+        $this->db_host = $db_host;
+        $this->db_port = $db_port;
+        $this->db_user = $db_user;
+        $this->db_pass = $db_pass;
+        $this->db_name = $db_name;
 
-        public function __construct($db_type, $db_host, $db_port, $db_user, $db_pass, $db_name){
-            $this->db_type = $db_type;
-            $this->db_host = $db_host;
-            $this->db_user = $db_user;
-            $this->db_pass = $db_pass;
-            $this->db_name = $db_name;
-            
-            $this->connection($db_type, $db_host, $db_port, $db_user, $db_pass, $db_name);
+        $this->connection = $this->connect();
+        if ($this->connection === null) {
+            die("Failed to establish a database connection.");
         }
-        public function connection($db_type, $db_host, $db_port, $db_user, $db_pass, $db_name){
-            switch($db_type){
-                case 'PDO' :
-                    if($db_port<>Null){
-                        $db_host .= ":" . $db_port;
-                    }
-                    try {
-                        // Create the connection
-                        $this->connection = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
-                        // set the PDO error mode to exception
-                        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                        // echo "Connected successfully :-)";
-                      } catch(PDOException $e) { return "Connection failed: " . $e->getMessage(); }
-                      break;
-                case 'MySQLi' :
-                    if($db_port<>Null){
-                        $db_host .= ":" . $db_port;
-                    }
-                    // Create connection
-                    $this->connection = new mysqli($db_host, $db_user, $db_pass, $db_name);
-                    // Check connection
-                    if ($this->connection->connect_error) { return "Connection failed: " . $this->connection->connect_error; } else{ echo "Connected successfully"; }
-                    break;
-            }
-        }
+    }
 
-/**************************************************************************************************
- * MySQLi Real Escape String (tested) Method
- ***************************************************************************************************/
-    public function escape_values($posted_values): string
-    {
-        switch ($this->db_type) {
-            case 'PDO':
-                $this->posted_values = addslashes($posted_values);
-                break;
-            case 'MySQLi':
-                $this->posted_values = $this->connection->real_escape_string($posted_values);
-                break;
-        }
-        return $this->posted_values;
-    }
-/**************************************************************************************************
- * Count Returned Results (tested) Method
- ***************************************************************************************************/
-    public function count_results($sql){
-        switch ($this->db_type) {
-            case 'PDO':
-                $res = $this->connection->prepare($sql);
-                $res->execute();
-                return $res->rowCount();
-                break;
-            case 'MySQLi':
-                if(is_object($this->connection->query($sql))){
-                    $result = $this->connection->query($sql);
-                    return $result->num_rows;
-                }else{
-                    print "Error 5: " . $sql . "<br />" . $this->connection->error . "<br />";
-                }
-                break;
-        }
-    }
-/**************************************************************************************************
- * Insert Query Method
- ***************************************************************************************************/
-    public function insert($table, $data){
-        ksort($data);
-        $fieldDetails = NULL;
-        $fieldNames = implode('`, `',  array_keys($data));
-        $fieldValues = implode("', '",  array_values($data));
-        $sth = "INSERT INTO $table (`$fieldNames`) VALUES ('$fieldValues')";
-        return $this->extracted($sth);
-    }
-/**************************************************************************************************
-* Select Query From a DataBase Method
- ***************************************************************************************************/
-    public function select($sql){
-        switch ($this->db_type) {
-            case 'PDO':
-                $result = $this->connection->prepare($sql);
-                $result->execute();
-                return $result->fetchAll(PDO::FETCH_ASSOC)[0];
-                break;
-            case 'MySQLi':
-                $result = $this->connection->query($sql);
-                return $result->fetch_assoc();
-                break;
-        }
-    }
-/***************************************************************************************************
-* Select Query While Loop From a DataBase (tested) Method
- ***************************************************************************************************/
-    public function select_while($sql){
-        switch ($this->db_type) {
-            case 'PDO':
-                $result = $this->connection->prepare($sql);
-                $result->execute();
-                return $result->fetchAll(PDO::FETCH_ASSOC);
-                break;
-            case 'MySQLi':
-                $result = $this->connection->query($sql);
-                for ($res = array (); $row = $result->fetch_assoc(); $res[] = $row);
-                return $res;
-                break;
-        }
-    }
-/**************************************************************************************************
- * Update Query (extracted) (tested) Method
- ***************************************************************************************************/
-    public function update($table, $data, $where){
-        $wer = '';
-        if(is_array($where)){
-            foreach ($where as $clave=>$value){
-                $wer.= $clave."='".$value."' AND ";
-            }
-            $wer   = substr($wer, 0, -4);
-            $where = $wer;
-        }
-        ksort($data);
-        $fieldDetails = NULL;
-        foreach ($data as $key => $values){
-            $fieldDetails .= "$key='$values',";
-        }
-        $fieldDetails = rtrim($fieldDetails,',');
-        if($where==NULL or $where==''){
-            $sth = "UPDATE $table SET $fieldDetails";
-        }else {
-            $sth = "UPDATE $table SET $fieldDetails WHERE $where";
-        }
-        return $this->extracted($sth);
-    }
-/**************************************************************************************************
- * Delete Query (extracted) (tested) Method
- ***************************************************************************************************/
-    public function delete($table,$where){
-        $wer = '';
-        if(is_array($where)){
-            foreach ($where as $clave=>$value){
-                $wer.= $clave."='".$value."' and ";
-            }
-            $wer   = substr($wer, 0, -4);
-            $where = $wer;
-        }
-        if($where==NULL or $where==''){
-            $sth = "DELETE FROM $table";
-        }else{
-            $sth = "DELETE FROM $table WHERE $where";
-        }
-            return $this->extracted($sth);
-    }
-/**************************************************************************************************
- * Truncate Query (extracted) Method
- ***************************************************************************************************/
-    public function truncate($table){
-        $sth = "TRUNCATE $table";
-        return $this->extracted($sth);
-    }
-	
-/**************************************************************************************************
- * Get ID of Last Inserted Record Method
- ***************************************************************************************************/
-	public function last_id(){
-        switch ($this->db_type) {
-        case 'PDO':
-                return $this->connection->lastInsertId();
-            break;
-		case 'MySQLi':
-			return $this->connection->insert_id;
-		break;
-		}
-	}	
-/**************************************************************************************************
- * Extracted (tested) Method
- ***************************************************************************************************/
-    /**
-     * @param string $sth
-     * @return bool|string|void
-     */
-    public function extracted(string $sth)
-    {
+    // Function to establish the connection
+    private function connect() {
         switch ($this->db_type) {
             case 'PDO':
                 try {
-                    // Prepare statement
-                    $stmt = $this->connection->prepare($sth);
-                    // execute the query
-                    $stmt->execute();
-                    return TRUE;
+                    $dsn = "mysql:host={$this->db_host};dbname={$this->db_name}";
+                    if ($this->db_port !== null) {
+                        $dsn .= ";port={$this->db_port}";
+                    }
+                    $pdo = new PDO($dsn, $this->db_user, $this->db_pass);
+                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                    return $pdo;
                 } catch (PDOException $e) {
-                    return $sth . "<br>" . $e->getMessage();
+                    echo "PDO connection failed: " . $e->getMessage();
+                    return null;
                 }
-                break;
+
             case 'MySQLi':
-                if ($this->connection->query($sth) === TRUE) {
-                    return TRUE;
-                } else {
-                    return "Error: " . $sth . "<br>" . $this->connection->error;
+                $mysqli = new mysqli($this->db_host, $this->db_user, $this->db_pass, $this->db_name, $this->db_port);
+                if ($mysqli->connect_error) {
+                    echo "MySQLi connection failed: " . $mysqli->connect_error;
+                    return null;
                 }
-                break;
+                return $mysqli;
+
+            default:
+                echo "Unsupported database type.";
+                return null;
+        }
+    }
+
+    /**************************************************************************************************
+     * Escape values method
+     ***************************************************************************************************/
+    public function escape_values($posted_values): string {
+        if ($this->connection === null) {
+            die("No database connection available.");
+        }
+
+        switch ($this->db_type) {
+            case 'PDO':
+                return addslashes($posted_values);
+            case 'MySQLi':
+                return $this->connection->real_escape_string($posted_values);
+        }
+    }
+
+    /**************************************************************************************************
+     * Count returned results method
+     ***************************************************************************************************/
+    public function count_results($sql) {
+        if ($this->connection === null) {
+            die("No database connection available.");
+        }
+
+        switch ($this->db_type) {
+            case 'PDO':
+                $stmt = $this->connection->prepare($sql);
+                $stmt->execute();
+                return $stmt->rowCount();
+            case 'MySQLi':
+                $result = $this->connection->query($sql);
+                if (is_object($result)) {
+                    return $result->num_rows;
+                } else {
+                    echo "Error: " . $this->connection->error;
+                }
+        }
+    }
+
+    /**************************************************************************************************
+     * Insert query method
+     ***************************************************************************************************/
+    public function insert($table, $data) {
+        ksort($data);
+        $fieldNames = implode('`, `', array_keys($data));
+        $fieldValues = implode("', '", array_values($data));
+        $sql = "INSERT INTO `$table` (`$fieldNames`) VALUES ('$fieldValues')";
+        return $this->execute_query($sql);
+    }
+
+    /**************************************************************************************************
+     * Select query method
+     ***************************************************************************************************/
+    public function select($sql) {
+        if ($this->connection === null) {
+            die("No database connection available.");
+        }
+
+        switch ($this->db_type) {
+            case 'PDO':
+                $stmt = $this->connection->prepare($sql);
+                $stmt->execute();
+                return $stmt->fetch(PDO::FETCH_ASSOC);
+            case 'MySQLi':
+                $result = $this->connection->query($sql);
+                return $result->fetch_assoc();
+        }
+    }
+
+    /**************************************************************************************************
+     * Select while loop query method
+     ***************************************************************************************************/
+    public function select_while($sql) {
+        if ($this->connection === null) {
+            die("No database connection available.");
+        }
+
+        switch ($this->db_type) {
+            case 'PDO':
+                $stmt = $this->connection->prepare($sql);
+                $stmt->execute();
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            case 'MySQLi':
+                $result = $this->connection->query($sql);
+                $data = [];
+                while ($row = $result->fetch_assoc()) {
+                    $data[] = $row;
+                }
+                return $data;
+        }
+    }
+
+    /**************************************************************************************************
+     * Update query method
+     ***************************************************************************************************/
+    public function update($table, $data, $where) {
+        ksort($data);
+        $fieldDetails = implode(', ', array_map(fn($key, $value) => "$key='$value'", array_keys($data), array_values($data)));
+
+        $whereClause = is_array($where) ? implode(' AND ', array_map(fn($key, $value) => "$key='$value'", array_keys($where), array_values($where))) : $where;
+
+        $sql = "UPDATE `$table` SET $fieldDetails WHERE $whereClause";
+        return $this->execute_query($sql);
+    }
+
+    /**************************************************************************************************
+     * Delete query method
+     ***************************************************************************************************/
+    public function delete($table, $where) {
+        $whereClause = is_array($where) ? implode(' AND ', array_map(fn($key, $value) => "$key='$value'", array_keys($where), array_values($where))) : $where;
+
+        $sql = "DELETE FROM `$table` WHERE $whereClause";
+        return $this->execute_query($sql);
+    }
+
+    /**************************************************************************************************
+     * Truncate table method
+     ***************************************************************************************************/
+    public function truncate($table) {
+        $sql = "TRUNCATE TABLE `$table`";
+        return $this->execute_query($sql);
+    }
+
+    /**************************************************************************************************
+     * Get last inserted ID method
+     ***************************************************************************************************/
+    public function last_id() {
+        if ($this->db_type == 'PDO') {
+            return $this->connection->lastInsertId();
+        } elseif ($this->db_type == 'MySQLi') {
+            return $this->connection->insert_id;
+        }
+    }
+
+    /**************************************************************************************************
+     * Execute query helper method
+     ***************************************************************************************************/
+    private function execute_query($sql) {
+        if ($this->connection === null) {
+            die("No database connection available.");
+        }
+
+        switch ($this->db_type) {
+            case 'PDO':
+                try {
+                    $stmt = $this->connection->prepare($sql);
+                    $stmt->execute();
+                    return true;
+                } catch (PDOException $e) {
+                    echo "Error executing query: " . $e->getMessage();
+                    return false;
+                }
+
+            case 'MySQLi':
+                if ($this->connection->query($sql) === true) {
+                    return true;
+                } else {
+                    echo "Error: " . $this->connection->error;
+                    return false;
+                }
         }
     }
 }

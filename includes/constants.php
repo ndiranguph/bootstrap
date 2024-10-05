@@ -1,5 +1,4 @@
 <?php
-    //Defining constants
     define('DBTYPE', 'PDO');
     define('HOSTNAME', '127.0.0.1');
     define('DBPORT', '3306');

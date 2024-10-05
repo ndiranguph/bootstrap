@@ -41,7 +41,7 @@ if ($spot_email_address_res > $exist_count){
     $errors['mailExists_err'] = "Email Already Exists";
 }
 
-// Verify Username Already Exists
+// Verify Username Already Exists in the dbs
 $spot_username_res = $conn->count_results(sprintf("SELECT username FROM users WHERE username = '%s' LIMIT 1", $username));
 if ($spot_username_res > $exist_count){
     $errors['usernameExists_err'] = "Username Already Exists";

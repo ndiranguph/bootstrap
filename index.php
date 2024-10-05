@@ -1,4 +1,5 @@
 <?php
+//to ensure load.php is used
 require "load.php";
 $ObjLayouts->heading();
 $ObjMenus->main_menu();

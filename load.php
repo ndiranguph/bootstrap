@@ -22,7 +22,7 @@ spl_autoload_register('classAutoLoad');
 
     $ObjGlob = new fncs();
 
-// Create instances of all classes
+// Create instances for all the classes
     $ObjLayouts = new layouts();
     $ObjMenus = new menus();
     $ObjHeadings = new headings();

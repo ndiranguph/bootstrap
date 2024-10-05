@@ -1,6 +1,5 @@
 
 <?php
-//Understand
 require "load.php";
 $ObjLayouts->heading();
 $ObjMenus->main_menu();

@@ -1,6 +1,7 @@
 
 <?php
 class user_forms{
+    //func for sign up form
     public function sign_up_form($ObjGlob){
 ?>
       <div class="row align-items-md-stretch">

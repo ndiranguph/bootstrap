@@ -1,6 +1,5 @@
 <?php
 class headings{
-  //public function for the main banner  
   public function main_banner(){
         ?>
       <div class="p-5 mb-4 bg-body-tertiary rounded-3">

@@ -5,7 +5,7 @@
 	$password = "";
 	$bdname = "api_d";
 
-	// Create connection
+	// Creating the connection
 	$conn = new mysqli($servername, $username, $password, $bdname);
 
 	// Check connection

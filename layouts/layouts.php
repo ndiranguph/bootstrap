@@ -1,6 +1,7 @@
 
 <?php
 class layouts{
+    //function for layouts
     public function heading(){
         ?>
 <!DOCTYPE html>

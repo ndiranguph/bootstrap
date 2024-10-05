@@ -1,7 +1,6 @@
 
 <?php
 class menus{
-  //fnc for the main menu
     public function main_menu(){
         ?>
 

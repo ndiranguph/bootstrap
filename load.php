@@ -4,7 +4,7 @@ session_start();
 require "includes/constants.php";
 require "includes/dbConnection.php";
 
-// Class Auto Load 
+// Class Auto Loading
 
 function classAutoLoad($classname){
 

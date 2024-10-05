@@ -24,7 +24,7 @@ if(!filter_var($email_address, FILTER_VALIDATE_EMAIL)){
     $errors['email_format_err'] = 'Wrong email format';
 }
 
-// verify that the email domain is authorized (@strathmore.edu, @gmail.com, @yahoo.com, @mada.co.ke) and not (@yanky.net)
+//Verify that the email domain is authorized (@strathmore.edu, @gmail.com, @yahoo.com, @mada.co.ke) and not (@yanky.net)
 $conf['valid_domains'] = ["strathmore.edu", "gmail.com", "yahoo.com", "mada.co.ke", "outlook.com", "STRATHMORE.EDU", "GMAIL.COM", "YAHOO.COM", "MADA.CO.KE", "OUTLOOK.COM"];
 
 $arr_email_address = explode("@", $email_address);

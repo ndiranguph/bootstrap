@@ -1,6 +1,7 @@
 
 <?php
 class fncs{
+    //fnc for setMsg
     public function setMsg($name, $values, $class){
         if(is_array($values)){
             $_SESSION[$name] = $values;

@@ -1,6 +1,7 @@
 <?php
 
 class user_details{
+    //Why public for username
     var $fname;
     public $username;
     var $yob;

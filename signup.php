@@ -1,5 +1,6 @@
 
 <?php
+// AAlso requires load.php
 require "load.php";
 $ObjLayouts->heading();
 $ObjMenus->main_menu();

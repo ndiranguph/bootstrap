@@ -1,4 +1,5 @@
 <?php
+//dbs connection
 class dbConnection {
     private $connection;
     private $db_type;

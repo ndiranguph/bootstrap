@@ -37,7 +37,7 @@ class user_forms{
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password:</label>
-                    <input type="text" name="password" class="form-control form-control-lg" maxlength="50" id="password" placeholder="Enter your password" <?php print (isset($_SESSION["password"])) ? 'value="'.$_SESSION["password"].'"'  : ''; unset($_SESSION["password"]); ?> >
+                    <input type="password" name="password" class="form-control form-control-lg" maxlength="50" id="password" placeholder="Enter your password">
                 </div>
                 <button type="submit" name="signup" class="btn btn-primary">Submit</button>
               </form>

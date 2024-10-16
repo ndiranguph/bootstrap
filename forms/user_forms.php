@@ -39,7 +39,6 @@ class user_forms {
                                 <option value="0">Select Gender</option>
                                 <option value="1">Male</option>
                                 <option value="2">Female</option>
-                                <!-- Add more options as needed -->
                             </select>
                         </div>
                         <div class="mb-3">
@@ -48,7 +47,6 @@ class user_forms {
                                 <option value="0">Select Role</option>
                                 <option value="1">User</option>
                                 <option value="2">Admin</option>
-                                <!-- Add more options as needed -->
                             </select>
                         </div>
                         <button type="submit" name="signup" class="btn btn-primary">Submit</button>
@@ -60,7 +58,6 @@ class user_forms {
     }
 }
 
-// Processing the form submission
 if (isset($_POST['signup'])) {
     $fullname = isset($_POST['fullname']) ? $_POST['fullname'] : '';
     $email_address = isset($_POST['email_address']) ? $_POST['email_address'] : '';

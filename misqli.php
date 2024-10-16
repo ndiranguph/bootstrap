@@ -3,7 +3,7 @@
 	$servername = "localhost";
 	$username = "root";
 	$password = "";
-	$bdname = "api_d";
+	$bdname = "bootstrap";
 
 	// Creating the connection
 	$conn = new mysqli($servername, $username, $password, $bdname);
